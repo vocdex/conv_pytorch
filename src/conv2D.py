@@ -56,25 +56,37 @@ class CustomConv2D(nn.Module):
 
         Arguments:
         input_size: Height or width of input tensor.
-        kernel_size: Height or width of kernel tensor.
-        padding: Padding size.
-        stride: Stride size.
         """
         return (input_size + 2 * self.padding - self.dilation*(self.kernel_size-1)-1) // self.stride + 1
 
     
     def forward(self, input: torch.Tensor) -> torch.Tensor:
-        if input.dim() != 4:
+        if input.dim() == 3:
+            print(f'Input tensor has {input.dim()} dimensions. Adding a batch dimension.')
+            input = input.unsqueeze(0)
+        elif input.dim() ==2:
+            print(f'Input tensor has {input.dim()} dimensions. Adding a batch and channel dimension.')
             input = input.unsqueeze(0).unsqueeze(0)
-            print(f'Input tensor has {input.dim()} dimensions. Adding 2 dimensions to match 4D tensor.')
+        elif input.dim() != 4:
+            raise ValueError(f'Input tensor must have 2, 3 or 4 dimensions. Got {input.dim()} dimensions.')
         
-        input_unfold = F.unfold(input, kernel_size=self.kernel_size, dilation=self.dilation, padding=self.padding, stride=self.stride)
+        height, width = input.shape[-2:]
 
+        input_unfold = F.unfold(input, kernel_size=self.kernel_size, dilation=self.dilation, padding=self.padding, stride=self.stride)
         weight = self.weight.view(self.out_channels, -1)
         output = weight.matmul(input_unfold)
-        output = F.fold(output, output_size=(self.get_output_size(input.size(2)), self.get_output_size(input.size(3))), kernel_size=1)
+        output = F.fold(output, output_size=(self.get_output_size(height), self.get_output_size(width)), kernel_size=1)
         if self.bias is not None:
             output += self.bias.unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-
         return output
+    
+if __name__ == '__main__':
+    from scipy.misc import face
+    img = face()
+    img = torch.tensor(img).permute(2, 0, 1).float()
+    kernel_size = (2, 2)
+    conv = CustomConv2D(in_channels=3, out_channels=3, kernel_size=kernel_size,padding=2)
+    weights = conv.weight
+    output_img1 = conv(img)
+   
     

@@ -78,22 +78,3 @@ class CustomConv2D(nn.Module):
 
         return output
     
-
-if __name__ == '__main__':
-    from scipy.misc import face
-    img = face(gray=True)
-    img = torch.from_numpy(img).float()
-    kernel_size = (2, 2)
-    conv = CustomConv2D(in_channels=1, out_channels=2, kernel_size=kernel_size,padding=2)
-    weights = conv.weight
-    img = img.unsqueeze(0).unsqueeze(0)
-    output_img1 = conv(img)
-    conv2 = nn.Conv2d(in_channels=1, out_channels=2, kernel_size=kernel_size,padding=2)
-    output_img2 = conv2(img)
-
-    import matplotlib.pyplot as plt
-    # plot both images next to each other
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    ax1.imshow(output_img1[0, 0, :, :].detach().numpy(), cmap='gray')
-    ax2.imshow(output_img2[0, 0, :, :].detach().numpy(), cmap='gray')
-    plt.show()

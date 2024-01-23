@@ -81,3 +81,8 @@ pytest tests/
 
 ## What's next?
 - Implement transposed convolution
+
+## Recap
+- PyTorch's built-in functions are fast
+- Unfold and fold are inverses of each other
+- Convolution is just a series of element-wise matrix multiplications

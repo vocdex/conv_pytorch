@@ -80,13 +80,3 @@ class CustomConv2D(nn.Module):
             output += self.bias.unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         return output
     
-if __name__ == '__main__':
-    from scipy.misc import face
-    img = face()
-    img = torch.tensor(img).permute(2, 0, 1).float()
-    kernel_size = (2, 2)
-    conv = CustomConv2D(in_channels=3, out_channels=3, kernel_size=kernel_size,padding=2)
-    weights = conv.weight
-    output_img1 = conv(img)
-   
-    

@@ -81,6 +81,7 @@ pytest tests/
 
 ## What's next?
 - Implement transposed convolution
+- Implement Fast Fourier convolution
 
 ## Recap
 - PyTorch's built-in functions are fast
